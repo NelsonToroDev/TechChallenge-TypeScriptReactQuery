@@ -1,11 +1,13 @@
 import { type User } from '../types.d'
 
 interface Props {
+  deleteUser: (userToDelete: User) => void
   showColors: boolean,
   users: User[]
 }
 
-export function UserList ({ showColors, users }: Props) {
+export function UserList ({ deleteUser, showColors, users }: Props) {
+  
 
   return (
     <table width='100%'>
@@ -36,7 +38,7 @@ export function UserList ({ showColors, users }: Props) {
                   {user.location.country}
                 </td>
                 <td>
-                  <button>Delete</button>
+                  <button onClick={() => deleteUser(user) }>Delete</button>
                 </td>
               </tr>
             )

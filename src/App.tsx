@@ -41,6 +41,12 @@ function App () {
     return a.location.country.localeCompare(b.location.country)
   }) : users
 
+  const handleDeleteUser = (userToDelete) =>
+  { 
+    const filteredUsers = users.filter(user => user.login.uuid !== userToDelete.login.uuid)
+    setUsers(filteredUsers)
+  }
+
   return (
     <div className='App'>
       <h1>React Technical Challenge</h1>
@@ -52,7 +58,7 @@ function App () {
         </button>
       </header>
       <main>
-        <UserList showColors={showColors} users={ sortedUsers } />
+        <UserList deleteUser={handleDeleteUser} showColors={showColors} users={ sortedUsers } />
       </main>
     </div>
   )

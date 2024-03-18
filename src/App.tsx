@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import './App.css'
 import { UserList } from './components/userLists';
 import { User } from './types';
-
-
 
 function App () {
   const [users, setUsers] = useState<User[]>([]);
   const [showColors, setShowColors] = useState(false);
   const [sortByCountry, setSortByCountry] = useState(false);
+
+  // UseRef keeps its Value between renderings and when Its value will be changed no new rendering will be fired
+  const originalUsers = useRef<User[]>([]);
 
   useEffect(() => {
     fetch("https://randomuser.me/api/?results=100")
@@ -21,6 +22,7 @@ function App () {
       })
       .then(res => {
         setUsers(res.results)
+        originalUsers.current = res.results
       })
       .catch(err => console.log(err));
 
@@ -41,10 +43,13 @@ function App () {
     return a.location.country.localeCompare(b.location.country)
   }) : users
 
-  const handleDeleteUser = (userToDelete) =>
-  { 
+  const handleDeleteUser = (userToDelete: User) => {
     const filteredUsers = users.filter(user => user.login.uuid !== userToDelete.login.uuid)
     setUsers(filteredUsers)
+  }
+
+  const handleReset = () => {
+    setUsers(originalUsers.current)
   }
 
   return (
@@ -56,12 +61,15 @@ function App () {
         <button onClick={toggleSortByCountry}>
           {sortByCountry ? 'Disable Sort by Country' : 'Enable Sort by Country'}
         </button>
+        <button
+          onClick={handleReset}>Reset</button>
       </header>
       <main>
-        <UserList deleteUser={handleDeleteUser} showColors={showColors} users={ sortedUsers } />
+        <UserList deleteUser={handleDeleteUser} showColors={showColors} users={sortedUsers} />
       </main>
     </div>
   )
 }
 
 export default App
+

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { UserList } from './components/userLists';
 
 
 
@@ -26,7 +27,7 @@ function App () {
   return (
     <div className='App'>
       <h1>Technical Challenge</h1>
-      { JSON.stringify(users) }
+      <UserList users={users} />
     </div>
   )
 }

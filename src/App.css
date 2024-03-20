@@ -4,4 +4,15 @@
   padding: 2rem;
   text-align: center;
   width: 100%;
+  background: #888;
+}
+
+.table--showColors tr:nth-child(2n){
+  background: #333;
+  color: #FFF;
+}
+
+.table--showColors tr:nth-child(2n + 1){
+  background: #555;
+  color: #FFF;
 }

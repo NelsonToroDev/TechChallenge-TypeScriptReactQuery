@@ -7,24 +7,24 @@ interface Props {
 }
 
 export function UserList ({ deleteUser, showColors, users }: Props) {
-  
+
 
   return (
     <table width='100%'>
       <thead>
-        <th>Photo</th>
-        <th>Name</th>
-        <th>Last Name</th>
-        <th>Country</th>
-        <th>Accions</th>
+        <tr>
+          <th>Photo</th>
+          <th>Name</th>
+          <th>Last Name</th>
+          <th>Country</th>
+          <th>Accions</th>
+        </tr>
       </thead>
-      <tbody>
+      <tbody className={ showColors ? 'table--showColors' : 'table'}>
         {
-          users.map((user, index) => {
-            const backgroundColor = index % 2 === 0 ? '#333' : '#555'
-            const color = showColors ? backgroundColor : 'transparent'
+          users.map((user) => {
             return (
-              <tr key={user.login.uuid} style={{ backgroundColor: color }}>
+              <tr key={user.login.uuid}>
                 <td>
                   <img src={user.picture.thumbnail}></img>
                 </td>
@@ -38,7 +38,7 @@ export function UserList ({ deleteUser, showColors, users }: Props) {
                   {user.location.country}
                 </td>
                 <td>
-                  <button onClick={() => deleteUser(user) }>Delete</button>
+                  <button onClick={() => deleteUser(user)}>Delete</button>
                 </td>
               </tr>
             )

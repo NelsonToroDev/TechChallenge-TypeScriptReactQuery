@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import './App.css'
 import { UserList } from './components/userLists';
 import { User } from './types';
@@ -38,17 +38,25 @@ function App () {
     setSortByCountry(prevState => !prevState)
   }
 
-  const filteredUsers = filterCountry != null && filterCountry.length > 0
-    ? users.filter(user => {
-    return user.location.country.toLowerCase().includes(filterCountry.toLowerCase())
-    })
-    : users
+  const filteredUsers = useMemo(() => {
+    console.log('Calculating filteredUsers')
+    return filterCountry != null && filterCountry.length > 0
+      ? users.filter(user => {
+        return user.location.country.toLowerCase().includes(filterCountry.toLowerCase())
+      })
+      : users
+  }, [users, filterCountry]);
 
   // sort function change the original array
   // toSorted function copy to new array and sort it before return, the original was not mutated
-  const sortedUsers = sortByCountry ? filteredUsers.toSorted((a, b) => {
-    return a.location.country.localeCompare(b.location.country)
-  }) : filteredUsers
+  const sortedUsers = useMemo(() => {
+    console.log('Calculating sortedUsers')
+    return sortByCountry
+      ? filteredUsers.toSorted((a, b) => {
+          return a.location.country.localeCompare(b.location.country)
+        })
+      : filteredUsers
+  }, [filteredUsers, sortByCountry])
 
   const handleDeleteUser = (userToDelete: User) => {
     const filteredUsers = users.filter(user => user.login.uuid !== userToDelete.login.uuid)
@@ -62,7 +70,7 @@ function App () {
   return (
     <div className='App'>
       <h1>React Technical Challenge</h1>
-      <header>
+      <header style={{ padding:'4px' }}>
         <button
           onClick={toggleShowColors}>Show Colors</button>
         <button onClick={toggleSortByCountry}>

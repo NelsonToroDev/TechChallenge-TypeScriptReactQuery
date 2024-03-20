@@ -7,6 +7,7 @@ function App () {
   const [users, setUsers] = useState<User[]>([]);
   const [showColors, setShowColors] = useState(false);
   const [sortByCountry, setSortByCountry] = useState(false);
+  const [filterCountry, setFilterCountry] = useState<string | null>(null);
 
   // UseRef keeps its Value between renderings and when Its value will be changed no new rendering will be fired
   const originalUsers = useRef<User[]>([]);
@@ -37,11 +38,17 @@ function App () {
     setSortByCountry(prevState => !prevState)
   }
 
+  const filteredUsers = filterCountry != null && filterCountry.length > 0
+    ? users.filter(user => {
+    return user.location.country.toLowerCase().includes(filterCountry.toLowerCase())
+    })
+    : users
+
   // sort function change the original array
-  // toSorted copy the array the sort it before return the new array, the original was not mutated
-  const sortedUsers = sortByCountry ? users.toSorted((a, b) => {
+  // toSorted function copy to new array and sort it before return, the original was not mutated
+  const sortedUsers = sortByCountry ? filteredUsers.toSorted((a, b) => {
     return a.location.country.localeCompare(b.location.country)
-  }) : users
+  }) : filteredUsers
 
   const handleDeleteUser = (userToDelete: User) => {
     const filteredUsers = users.filter(user => user.login.uuid !== userToDelete.login.uuid)
@@ -63,6 +70,7 @@ function App () {
         </button>
         <button
           onClick={handleReset}>Reset</button>
+        <input placeholder='Filter by country' onChange={(e) => { setFilterCountry(e.target.value) }} />
       </header>
       <main>
         <UserList deleteUser={handleDeleteUser} showColors={showColors} users={sortedUsers} />

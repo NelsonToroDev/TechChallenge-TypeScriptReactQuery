@@ -6,11 +6,10 @@ import { SortBy, type User } from './types.d';
 function App () {
   const [users, setUsers] = useState<User[]>([]);
   const [showColors, setShowColors] = useState(false);
-  const [filterCountry, setFilterCountry] = useState<string | null>(null);
+  const [filterCriteria, setFilterCriteria] = useState<string | null>(null);
   
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE);
   const [enableSorting, setEnableSorting] = useState(false)
-  const [newSortingCriteria, setNewSortingCriteria] = useState(false)
   const prevSorting = useRef<SortBy>(SortBy.COUNTRY) // It cannot be None
 
   // UseRef keeps its Value between renderings and when Its value will be changed no new rendering will be fired
@@ -40,12 +39,12 @@ function App () {
 
   const filteredUsers = useMemo(() => {
     // console.log('Calculating filteredUsers')
-    return filterCountry != null && filterCountry.length > 0
+    return filterCriteria != null && filterCriteria.length > 0
       ? users.filter(user => {
-        return user.location.country.toLowerCase().includes(filterCountry.toLowerCase())
+        return user.location.country.toLowerCase().includes(filterCriteria.toLowerCase())
       })
       : users
-  }, [users, filterCountry]);
+  }, [users, filterCriteria]);
 
   const handleChangeSorting = (sortingCriteria: SortBy) => {
     let newCriteria = sortingCriteria !== prevSorting.current
@@ -100,6 +99,14 @@ function App () {
 
   const handleReset = () => {
     setUsers(originalUsers.current)
+    setShowColors(false)
+    setEnableSorting(false)
+    setSorting(SortBy.NONE)
+    setFilterCriteria("");
+  }
+
+  const handleClearFilter = () => {
+    setFilterCriteria("");
   }
 
   return (
@@ -113,7 +120,9 @@ function App () {
         </button>
         <button
           onClick={handleReset}>Reset</button>
-        <input placeholder='Filter by country' onChange={(e) => { setFilterCountry(e.target.value) }} />
+        <input placeholder='Filter by country' onChange={(e) => { setFilterCriteria(e.target.value) }} value={filterCriteria === null ? "" : filterCriteria} />
+        <button
+          onClick={handleClearFilter}>Clear Filter</button>
       </header>
       <main>
         <UserList changeSorting={ handleChangeSorting } deleteUser={handleDeleteUser} showColors={showColors} users={sortedUsers} />

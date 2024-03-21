@@ -7,12 +7,24 @@
   background: #888;
 }
 
-.table--showColors tr:nth-child(2n){
+.table--showColors tr:nth-child(odd){
   background: #333;
   color: #FFF;
 }
 
-.table--showColors tr:nth-child(2n + 1){
+.table--showColors tr:nth-child(even){
   background: #555;
   color: #FFF;
+}
+
+header {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 48px;
+  justify-content: center;
+  align-items: center;
+}
+
+.pointer {
+  cursor: crosshair;
 }

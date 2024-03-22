@@ -1,34 +1,35 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
+    es2021: true
   },
   extends: 'plugin:react/recommended',
+  //extends: './node_modules/ts-standard/eslintrc.json',
   overrides: [
     {
       env: {
-        node: true,
+        node: true
       },
       files: [
-        '.eslintrc.{js,cjs}',
+        '.eslintrc.{js,cjs}'
       ],
       parserOptions: {
-        sourceType: 'script',
-      },
-    },
+        sourceType: 'script'
+      }
+    }
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: '[./tsconfig.json, ./.eslintrc.cjs]',
+    project: '[./tsconfig.json, ./.eslintrc.cjs]'
   },
   plugins: [
     '@typescript-eslint',
-    'react',
+    'react'
   ],
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',
-    'react/react-in-jsx-scope': 'off',
-  },
+    'react/react-in-jsx-scope': 'off'
+  }
 }

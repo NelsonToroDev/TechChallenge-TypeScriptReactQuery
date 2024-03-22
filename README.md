@@ -22,3 +22,7 @@ Here are the steps to follow:
 - ✅ Avoid sorting users again the data when the user is changing filter by country.
 - ✅ Sort by clicking on the column header.
 - ✅ Support clear filter
+- ✅ Support Loading and errors when fetching users
+- [] Support pagination
+- [] Support Infinite scrolling
+  

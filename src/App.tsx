@@ -1,36 +1,47 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
 import './App.css'
-import { UserList } from './components/userLists';
-import { SortBy, type User } from './types.d';
+import { UserList } from './components/userLists'
+import { SortBy, type User } from './types.d'
 
 function App () {
-  const [users, setUsers] = useState<User[]>([]);
-  const [showColors, setShowColors] = useState(false);
-  const [filterCriteria, setFilterCriteria] = useState<string | null>(null);
-  
-  const [sorting, setSorting] = useState<SortBy>(SortBy.NONE);
+  const [users, setUsers] = useState<User[]>([])
+  const [showColors, setShowColors] = useState(false)
+  const [filterCriteria, setFilterCriteria] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+
+  const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
   const [enableSorting, setEnableSorting] = useState(false)
   const prevSorting = useRef<SortBy>(SortBy.COUNTRY) // It cannot be None
 
   // UseRef keeps its Value between renderings and when Its value will be changed no new rendering will be fired
-  const originalUsers = useRef<User[]>([]);
+  const originalUsers = useRef<User[]>([])
 
   useEffect(() => {
-    fetch("https://randomuser.me/api/?results=100")
+    setLoading(true)
+    setError(false)
+
+    fetch('https://randomuser.me/api/?results=10')
       .then(async (res) => {
-        if (await (res.status !== 200)) {
-          throw new Error("An error occurs fectching users")
+        if (!res.ok) {
+          throw new Error('An error occurs fectching users')
         }
 
-        return res.json()
+        return await res.json()
       })
-      .then(res => {
-        setUsers(res.results)
-        originalUsers.current = res.results
+      .then(json => {
+        setUsers(json.results)
+        originalUsers.current = json.results
+        setError(false)
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        setError(true)
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
 
-    return
   }, [])
 
   const toggleShowColors = () => {
@@ -44,10 +55,10 @@ function App () {
         return user.location.country.toLowerCase().includes(filterCriteria.toLowerCase())
       })
       : users
-  }, [users, filterCriteria]);
+  }, [users, filterCriteria])
 
   const handleChangeSorting = (sortingCriteria: SortBy) => {
-    let newCriteria = sortingCriteria !== prevSorting.current
+    const newCriteria = sortingCriteria !== prevSorting.current
 
     if (newCriteria) {
       prevSorting.current = sortingCriteria
@@ -83,7 +94,7 @@ function App () {
     const compareProperties: Record<string, (user: User) => any> = {
       [SortBy.NAME]: user => user.name.first,
       [SortBy.LAST]: user => user.name.last,
-      [SortBy.COUNTRY] : user => user.location.country
+      [SortBy.COUNTRY]: user => user.location.country
     }
 
     return filteredUsers.toSorted((a, b) => {
@@ -102,11 +113,11 @@ function App () {
     setShowColors(false)
     setEnableSorting(false)
     setSorting(SortBy.NONE)
-    setFilterCriteria("");
+    setFilterCriteria('')
   }
 
   const handleClearFilter = () => {
-    setFilterCriteria("");
+    setFilterCriteria('')
   }
 
   return (
@@ -114,22 +125,39 @@ function App () {
       <h1>React Technical Challenge</h1>
       <header>
         <button
-          onClick={toggleShowColors}>Show Colors</button>
+          onClick={toggleShowColors}
+        >Show Colors
+        </button>
         <button onClick={toggleEnableSorting}>
           {sorting !== SortBy.NONE ? `Disable Sort by ${prevSorting.current}` : `Enable Sort by ${prevSorting.current}`}
         </button>
         <button
-          onClick={handleReset}>Reset</button>
-        <input placeholder='Filter by country' onChange={(e) => { setFilterCriteria(e.target.value) }} value={filterCriteria === null ? "" : filterCriteria} />
+          onClick={handleReset}
+        >Reset
+        </button>
+        <input placeholder='Filter by country' onChange={(e) => { setFilterCriteria(e.target.value) }} value={filterCriteria === null ? '' : filterCriteria} />
         <button
-          onClick={handleClearFilter}>Clear Filter</button>
+          onClick={handleClearFilter}
+        >Clear Filter
+        </button>
       </header>
       <main>
-        <UserList changeSorting={ handleChangeSorting } deleteUser={handleDeleteUser} showColors={showColors} users={sortedUsers} />
+        {loading && <strong>Loading...</strong>}
+        
+        {!loading && error && <strong>An error occurs</strong>}
+        
+        {!loading && !error && users.length === 0 && <strong>There are not users</strong>}
+        
+        {!loading && !error && users.length > 0
+          && <UserList
+          changeSorting={handleChangeSorting}
+          deleteUser={handleDeleteUser} 
+          showColors={showColors}
+          users={sortedUsers} />
+        }
       </main>
     </div>
   )
 }
 
 export default App
-

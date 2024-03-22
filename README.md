@@ -23,6 +23,6 @@ Here are the steps to follow:
 - ✅ Sort by clicking on the column header.
 - ✅ Support clear filter
 - ✅ Support Loading and errors when fetching users
-- [] Support pagination
+- ✅ Support pagination
 - [] Support Infinite scrolling
   

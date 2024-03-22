@@ -9,6 +9,7 @@ function App () {
   const [filterCriteria, setFilterCriteria] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
   const [enableSorting, setEnableSorting] = useState(false)
@@ -21,7 +22,7 @@ function App () {
     setLoading(true)
     setError(false)
 
-    fetch('https://randomuser.me/api/?results=10')
+    fetch(`https://randomuser.me/api/?results=10&seed=torodev&page=${currentPage}`)
       .then(async (res) => {
         if (!res.ok) {
           throw new Error('An error occurs fectching users')
@@ -29,9 +30,13 @@ function App () {
 
         return await res.json()
       })
-      .then(json => {
-        setUsers(json.results)
-        originalUsers.current = json.results
+      .then(res => {
+        setUsers(prevUsers => {
+          const newUsers = prevUsers.concat(res.results)
+          originalUsers.current = newUsers
+          return newUsers
+        })
+        
         setError(false)
       })
       .catch(err => {
@@ -42,7 +47,7 @@ function App () {
         setLoading(false)
       })
 
-  }, [])
+  }, [currentPage])
 
   const toggleShowColors = () => {
     setShowColors(!showColors)
@@ -142,18 +147,22 @@ function App () {
         </button>
       </header>
       <main>
-        {loading && <strong>Loading...</strong>}
-        
-        {!loading && error && <strong>An error occurs</strong>}
-        
-        {!loading && !error && users.length === 0 && <strong>There are not users</strong>}
-        
-        {!loading && !error && users.length > 0
+        {users.length > 0
           && <UserList
           changeSorting={handleChangeSorting}
           deleteUser={handleDeleteUser} 
           showColors={showColors}
           users={sortedUsers} />
+        }
+
+        {loading && <strong>Loading...</strong>}
+        
+        {error && <strong>An error occurs</strong>}
+        
+        {!error && users.length === 0 && <strong>There are not users</strong>}
+        
+        {!loading && !error && users.length > 0
+          && < button onClick={() => setCurrentPage(currentPage + 1)}>Load more users</button>
         }
       </main>
     </div>

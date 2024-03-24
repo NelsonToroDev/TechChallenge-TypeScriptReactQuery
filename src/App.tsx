@@ -3,57 +3,20 @@ import './App.css'
 import { UserList } from './components/userLists'
 import { SortBy, type User } from './types.d'
 import { useInfiniteQuery } from '@tanstack/react-query'
-
-/**
- * 
- * @returns (property) queryFn?: unique symbol | QueryFunction<{
-    users: User[];
-    nextCursor?: number | undefined;
-}, QueryKey, unknown> | undefined
- */
-
-type UsersResponse = {
-  nextCursor?: number,
-  users: User[]
-}
-
-async function fetchUsers ({ pageParam }: { pageParam: UsersResponse['nextCursor'] }): Promise<UsersResponse> {
-  return await fetch(`https://randomuser.me/api/?results=10&seed=torodev&page=${pageParam}`)
-    .then(async (res) => {
-      if (!res.ok) {
-        throw new Error('An error occurs fectching users')
-      }
-
-      return await res.json()
-    })
-    .then(res => {
-      const currentCursor = Number(res.info.page)
-      const nextCursor = currentCursor > 3 ? undefined : currentCursor + 1
-      return {
-        users: res.results,
-        nextCursor
-      }
-    })
-}
-
+import { useUsers } from './hooks/useUsers'
+import { Results } from './components/Results'
 
 function App () {
+  
+
   const {
     isLoading,
     isError,
-    data,
+    users,
     refetch,
     fetchNextPage,
     hasNextPage
-  } = useInfiniteQuery
-      ({
-        queryKey: ['users'],  // Key of the query
-        queryFn: fetchUsers,
-        initialPageParam: 1,
-        getNextPageParam: (lastPage) => lastPage.nextCursor
-      })
-
-  const users: User[] = data?.pages?.flatMap(page => page.users) ?? []
+  } = useUsers()
 
   const [showColors, setShowColors] = useState(false)
   const [filterCriteria, setFilterCriteria] = useState<string | null>(null)
@@ -145,6 +108,7 @@ function App () {
   return (
     <div className='App'>
       <h1>React Technical Challenge</h1>
+      <Results />
       <header>
         <button
           onClick={toggleShowColors}

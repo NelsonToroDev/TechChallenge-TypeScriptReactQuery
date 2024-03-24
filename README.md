@@ -24,5 +24,6 @@ Here are the steps to follow:
 - ✅ Support clear filter
 - ✅ Support Loading and errors when fetching users
 - ✅ Support pagination
-- [] Support Infinite scrolling
+- ✅ Support Infinite scrolling
+- [] DevTools
   

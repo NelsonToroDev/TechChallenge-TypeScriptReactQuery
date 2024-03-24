@@ -25,5 +25,5 @@ Here are the steps to follow:
 - ✅ Support Loading and errors when fetching users
 - ✅ Support pagination
 - ✅ Support Infinite scrolling
-- [] DevTools
+- [] Use React-Query-DevTools
   

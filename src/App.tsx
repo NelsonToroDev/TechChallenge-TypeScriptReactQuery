@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
 import './App.css'
 import { UserList } from './components/userLists'
-import { SortBy, type User } from './types.d'
-import { QueryClient, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { PagesPaginated, SortBy, type User } from './types.d'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useUsers } from './hooks/useUsers'
 import { Results } from './components/Results'
 
@@ -99,7 +99,7 @@ function App () {
     // throw new Error('Force to undo the optimistic delete')
   }
 
-  const { mutate, isPending: isLoadingMutation } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: deleteUser,
     onMutate: async (userToDelete) => {
       await queryClient.cancelQueries({
@@ -109,9 +109,9 @@ function App () {
       const previousUsers = queryClient.getQueryData(['users'])
       if (userToDelete == null) return { previousUsers }
 
-      queryClient.setQueryData(['users'], (oldUsers) => {
+      queryClient.setQueryData(['users'], (oldUsers: PagesPaginated) => {
         const pages = oldUsers.pages.map(page => {
-          return { ...page, users: page.users.filter(user => user.login.uuid !== userToDelete.login.uuid) }
+          return { ...page, users: page.users.filter((user : User) => user.login.uuid !== userToDelete.login.uuid) }
         })
         
         return { pages: pages, pageParams: oldUsers.pageParams }
@@ -119,7 +119,7 @@ function App () {
 
       return { previousUsers }
     },
-    onError: (context, error) => {
+    onError: (context) => {
       if (context?.previousUsers != null) {
         queryClient.setQueriesData(['users'], context.previousUsers)
       }

@@ -13,6 +13,16 @@ declare global {
   }
 }
 
+export type PagesPaginated = {
+  pages: UsersResponse[],
+  pageParams: []
+}
+
+export type UsersResponse = {
+  nextCursor?: number,
+  users: User[]
+}
+
 export interface APIResults {
   results: User[];
   info:    Info;

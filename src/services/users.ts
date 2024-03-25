@@ -1,9 +1,4 @@
-import { User } from "../types"
-
-export type UsersResponse = {
-  nextCursor?: number,
-  users: User[]
-}
+import { UsersResponse } from "../types"
 
 export async function fetchUsers ({ pageParam }: { pageParam: UsersResponse['nextCursor'] }): Promise<UsersResponse> {
   return await fetch(`https://randomuser.me/api/?results=5&seed=torodev&page=${pageParam}`)

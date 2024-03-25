@@ -1,3 +1,6 @@
+# Deployed on Netlify
+[](techchallenge-tablesorting.netlify.app)
+
 # Technical Challenge TypeScript and React
 React Technical Practice based on [MiduDev](https://midu.dev) course
 [React Course](https://www.youtube.com/playlist?list=PLUofhDIg_38q4D0xNWp7FEHOTcZhjWJ29)
@@ -25,5 +28,6 @@ Here are the steps to follow:
 - ✅ Support Loading and errors when fetching users
 - ✅ Support pagination
 - ✅ Support Infinite scrolling
-- [] Use React-Query-DevTools
+- ✅ Use React-Query-DevTools
+- ✅ Use UseMutation from React-Query to delete users
   

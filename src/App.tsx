@@ -2,12 +2,12 @@ import { useEffect, useState, useRef, useMemo } from 'react'
 import './App.css'
 import { UserList } from './components/userLists'
 import { SortBy, type User } from './types.d'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { QueryClient, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useUsers } from './hooks/useUsers'
 import { Results } from './components/Results'
 
 function App () {
-  
+
 
   const {
     isLoading,
@@ -17,6 +17,8 @@ function App () {
     fetchNextPage,
     hasNextPage
   } = useUsers()
+
+
 
   const [showColors, setShowColors] = useState(false)
   const [filterCriteria, setFilterCriteria] = useState<string | null>(null)
@@ -87,9 +89,52 @@ function App () {
     })
   }, [filteredUsers, sorting])
 
+  const queryClient = useQueryClient()
+  const delay = async (ms: number) => await new Promise(resolve => setTimeout(resolve, ms))
+
+  const deleteUser = async (userToDelete: User) => {
+    console.log(`Deleting user: ${userToDelete.name.first}`)
+    
+    // await delay(100)
+    // throw new Error('Force to undo the optimistic delete')
+  }
+
+  const { mutate, isPending: isLoadingMutation } = useMutation({
+    mutationFn: deleteUser,
+    onMutate: async (userToDelete) => {
+      await queryClient.cancelQueries({
+        queryKey: ['users']
+      })
+
+      const previousUsers = queryClient.getQueryData(['users'])
+      if (userToDelete == null) return { previousUsers }
+
+      queryClient.setQueryData(['users'], (oldUsers) => {
+        const pages = oldUsers.pages.map(page => {
+          return { ...page, users: page.users.filter(user => user.login.uuid !== userToDelete.login.uuid) }
+        })
+        
+        return { pages: pages, pageParams: oldUsers.pageParams }
+      })
+
+      return { previousUsers }
+    },
+    onError: (context, error) => {
+      if (context?.previousUsers != null) {
+        queryClient.setQueriesData(['users'], context.previousUsers)
+      }
+    },
+    onSettled: async () => {
+      // await queryClient.invalidateQueries({
+      //   queryKey: ['users']
+      // })
+    }
+  })
+
   const handleDeleteUser = (userToDelete: User) => {
-    const filteredUsers = users.filter(user => user.login.uuid !== userToDelete.login.uuid)
-    //setUsers(filteredUsers)
+    
+    //if (isLoadingMutation) return
+    mutate(userToDelete)
   }
 
   const handleReset = async () => {
@@ -140,7 +185,7 @@ function App () {
 
         {isError && <strong>An error occurs</strong>}
 
-        {!isLoading && !isError && users.length === 0 && <strong>There are not users</strong>}
+        {!isLoading && !isError && users.length === 0 && <strong>There are not more users</strong>}
 
         {!isLoading && !isError && users.length > 0 && hasNextPage
           && < button onClick={() => fetchNextPage()}>Load more users</button>

@@ -1,5 +1,5 @@
 # Deployed on Netlify
-[](techchallenge-tablesorting.netlify.app)
+[techchallenge-tablesorting.netlify.app](https://techchallenge-tablesorting.netlify.app/)
 
 # Technical Challenge TypeScript and React
 React Technical Practice based on [MiduDev](https://midu.dev) course
